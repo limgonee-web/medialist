@@ -56,6 +56,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .tag-통신사{background:rgba(180,100,255,0.12);color:#c478ff;border:1px solid rgba(180,100,255,0.25);}
 .tag-IT\/스타트업,.tag-IT스타트업{background:rgba(255,170,50,0.12);color:#ffaa32;border:1px solid rgba(255,170,50,0.25);}
 .tag-방송{background:rgba(255,100,150,0.12);color:#ff6496;border:1px solid rgba(255,100,150,0.25);}
+.tag-주간지\/월간지,.tag-IT스타트업{background:rgba(20,184,166,0.12);color:#14b8a6;border:1px solid rgba(20,184,166,0.28);}
 .tag-기타{background:rgba(150,150,180,0.12);color:#a0a0c0;border:1px solid rgba(150,150,180,0.25);}
 .media-name{font-size:14px;font-weight:600;}
 .media-count{font-size:11px;color:var(--text3);margin-left:auto;}
@@ -227,7 +228,7 @@ td.td-name{font-weight:600;}
       <label class="form-label">매체타입</label>
       <select class="form-select" id="f-type">
         <option>종합지</option><option>경제지</option><option>통신사</option>
-        <option>인터넷</option><option>IT/스타트업</option><option>방송</option><option>기타</option>
+        <option>인터넷</option><option>IT/스타트업</option><option>방송</option><option>주간지/월간지</option><option>기타</option>
       </select>
     </div>
     <div class="form-field">
@@ -305,7 +306,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxtB2oTkcWboVkgBDByDqRb
 let data = [];
 let nextId = 1;
 
-const MEDIA_TYPES = ["종합지","경제지","통신사","인터넷","IT/스타트업","방송","기타"];
+const MEDIA_TYPES = ["종합지","경제지","통신사","인터넷","IT/스타트업","방송","주간지/월간지","기타"];
 let typeFilter = null;
 let statusFilter = null;
 let editingId = null;
@@ -722,4 +723,5 @@ loadData();
 </script>
 </body>
 </html>
+
 
