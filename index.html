@@ -309,7 +309,7 @@ let nextId = 1;
 
 const MEDIA_TYPES = ["종합지","경제지","통신사","인터넷","IT/스타트업","방송","주간지/월간지","기타"];
 let typeFilter = null;
-let statusFilter = active;
+let statusFilter = 'active';
 let editingId = null;
 let histEditingId = null;
 
@@ -331,6 +331,8 @@ async function loadData() {
       nextId = Math.max(...data.map(d => parseInt(d.id) || 0)) + 1;
     }
     initFilters();
+    document.getElementById('btnActive').classList.add('active-filter');
+render();
     render();
   } catch (error) {
     alert('데이터를 불러오지 못했습니다. 네트워크 상태를 확인해주세요.');
@@ -723,6 +725,7 @@ loadData();
 </script>
 </body>
 </html>
+
 
 
 
