@@ -207,8 +207,10 @@ td.td-name{font-weight:600;}
   </div>
   <div class="filter-group" id="typeFilters"></div>
   <div class="separator"></div>
-  <button class="status-btn" id="btnActive" onclick="toggleStatus('active')">● 출입</button>
+  
+  <button class="status-btn active-filter" id="btnActive" onclick="toggleStatus('active')">● 출입</button>
   <button class="status-btn" id="btnInactive" onclick="toggleStatus('inactive')">○ 제외</button>
+  
   <button class="add-btn" onclick="openAddModal()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>기자 추가
   </button>
@@ -357,7 +359,6 @@ function getFiltered() {
 // ── RENDER ─────────────────────────────────────────
 function render() {
   const filtered = getFiltered();
-  document.getElementById('total-count').textContent = data.length;
   document.getElementById('active-count').textContent = data.filter(d=>d.active).length;
 
   const main = document.getElementById('mainContent');
@@ -722,6 +723,7 @@ loadData();
 </script>
 </body>
 </html>
+
 
 
 
