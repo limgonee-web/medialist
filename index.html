@@ -208,7 +208,7 @@ td.td-name{font-weight:600;}
   </div>
   <div class="filter-group" id="typeFilters"></div>
   <div class="separator"></div>
-  <button class="status-btn" id="btnActive" onclick="toggleStatus('active')">● 출입중</button>
+  <button class="status-btn" id="btnActive" onclick="toggleStatus('active')">● 출입</button>
   <button class="status-btn" id="btnInactive" onclick="toggleStatus('inactive')">○ 제외</button>
   <button class="add-btn" onclick="openAddModal()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>기자 추가
@@ -308,7 +308,7 @@ let nextId = 1;
 
 const MEDIA_TYPES = ["종합지","경제지","통신사","인터넷","IT/스타트업","방송","주간지/월간지","기타"];
 let typeFilter = null;
-let statusFilter = null;
+let statusFilter = active;
 let editingId = null;
 let histEditingId = null;
 
@@ -723,4 +723,5 @@ loadData();
 </script>
 </body>
 </html>
+
 
