@@ -70,7 +70,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--text);
 .chevron{color:var(--text3);font-size:11px;transition:transform .2s;flex-shrink:0;}
 .chevron.open{transform:rotate(180deg);}
 
-/* ★ TABLE - 모바일 가로 스크롤 핵심 */
+/* TABLE */
 .table-wrap{border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;}
 .table-wrap.collapsed{display:none;}
 table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:960px;}
@@ -95,7 +95,7 @@ td.td-name{font-weight:600;}
 .col-status{width:80px;}
 .col-actions{width:70px;}
 
-/* ★ 모바일 카드뷰 */
+/* 모바일 카드뷰 */
 @media(max-width:768px){
   .table-wrap{overflow:hidden;border:none;border-radius:0 0 8px 8px;}
   .table-wrap table, .table-wrap thead{display:none;}
@@ -214,10 +214,6 @@ td.td-name{font-weight:600;}
 .spinner{border:4px solid rgba(79,142,255,.2);border-top:4px solid var(--accent);border-radius:50%;width:36px;height:36px;animation:spin 1s linear infinite;margin-bottom:14px;}
 @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 #loadingText{color:var(--text);font-size:14px;font-weight:500;letter-spacing:0.5px;}
-
-/* SCROLL HINT */
-.scroll-hint{display:none;padding:6px 12px;font-size:11px;color:var(--text3);text-align:center;border:1px solid var(--border);border-top:none;background:var(--surface);border-radius:0 0 8px 8px;}
-@media(max-width:768px){.scroll-hint{display:none;}}
 </style>
 </head>
 <body>
@@ -380,20 +376,16 @@ function getFiltered() {
   });
 }
 
-// ── 모바일 카드 HTML 생성 ──────────────────────────
 function buildMobileCard(j) {
   const iClass = j.active ? '' : 'row-inactive';
   const emailsHtml = (j.emails||[]).length
     ? (j.emails||[]).map(e => `<span class="email-tag" onclick="copyText('${e.replace(/'/g,"\\'")}',this)">${e}</span>`).join(' ')
     : '<span style="color:var(--text3);font-size:12px">—</span>';
-
   const ef = j.emailSend ? '<span class="send-flag flag-email-on">✉ 이메일</span>' : '';
   const sf = j.smsSend ? '<span class="send-flag flag-sms-on">✆ 문자</span>' : '';
-
   const last2 = (j.history||[]).slice(-2);
   const histPills = last2.map(h=>`<span class="hist-pill ${h.type==='join'?'hist-join':'hist-leave'}">${h.type==='join'?'↑':'↓'} ${h.date}</span>`).join(' ');
   const histExtra = (j.history||[]).length>2 ? `<span style="font-size:10px;color:var(--text3)">+${(j.history||[]).length-2}</span>` : '';
-
   return `<div class="mobile-card ${iClass}">
     <div class="mobile-card-top">
       <div>
@@ -423,11 +415,9 @@ function buildMobileCard(j) {
   </div>`;
 }
 
-// ── RENDER ─────────────────────────────────────────
 function render() {
   const filtered = getFiltered();
   document.getElementById('active-count').textContent = data.filter(d=>d.active).length;
-
   const main = document.getElementById('mainContent');
   if (!filtered.length) { main.innerHTML = '<div class="no-results">검색 결과가 없습니다.</div>'; return; }
 
@@ -461,13 +451,11 @@ function render() {
       <div class="table-wrap" id="grp-${gKey}">`;
 
     if (mobile) {
-      // 모바일: 카드뷰
       html += '<div class="mobile-cards">';
       sorted.forEach(j => { html += buildMobileCard(j); });
       html += '</div>';
     }
 
-    // 데스크톱: 테이블
     html += `<table>
           <colgroup>
             <col class="col-dept"><col class="col-name"><col class="col-email">
@@ -516,7 +504,6 @@ function render() {
   main.innerHTML = html;
 }
 
-// resize 시 재렌더링
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
@@ -628,6 +615,7 @@ function updateMediaDatalist() {
   const names = [...new Set(data.map(d=>d.mediaName))].sort((a,b)=>a.localeCompare(b,'ko'));
   document.getElementById('media-datalist').innerHTML = names.map(n=>`<option value="${n}">`).join('');
 }
+
 function openAddModal() {
   editingId = null;
   document.getElementById('modalTitle').textContent = '기자 추가';
@@ -669,6 +657,7 @@ async function saveJournalist() {
   if (!name) { alert('기자명을 입력하세요.'); return; }
   showLoading('데이터를 구글 시트에 저장하는 중입니다...');
   const emails = getEmailValues();
+  const mediaName = document.getElementById('f-media').value.trim();
   let targetData = null;
   let actionStr = 'add';
 
@@ -676,29 +665,41 @@ async function saveJournalist() {
     actionStr = 'edit';
     targetData = data.find(d=>d.id===editingId);
     targetData.mediaType = document.getElementById('f-type').value;
-    targetData.mediaName = document.getElementById('f-media').value.trim();
+    targetData.mediaName = mediaName;
     targetData.dept = document.getElementById('f-dept').value.trim();
-    targetData.name = name; targetData.emails = emails;
+    targetData.name = name;
+    targetData.emails = emails;
     targetData.phone = document.getElementById('f-phone').value.trim();
     targetData.emailSend = getSendVal('f-emailSend');
     targetData.smsSend = getSendVal('f-smsSend');
     targetData.memo = document.getElementById('f-memo').value.trim();
   } else {
     const date = document.getElementById('f-date').value;
+
+    // ✅ 수정된 부분: 같은 매체명이 이미 존재하면 그 sheetOrder/mediaOrder 상속
+    const sameMedia = data.find(d => d.mediaName === mediaName);
+
     targetData = {
-      id: nextId++, sheet: '신규', sheetOrder: 99, mediaOrder: 9999,
+      id: nextId++,
+      sheet: sameMedia ? sameMedia.sheet : '신규',
+      sheetOrder: sameMedia ? sameMedia.sheetOrder : 99,
+      mediaOrder: sameMedia ? sameMedia.mediaOrder : 9999,
       mediaType: document.getElementById('f-type').value,
-      mediaName: document.getElementById('f-media').value.trim(),
+      mediaName: mediaName,
       dept: document.getElementById('f-dept').value.trim(),
-      name, emails, phone: document.getElementById('f-phone').value.trim(),
+      name,
+      emails,
+      phone: document.getElementById('f-phone').value.trim(),
       active: true,
       emailSend: getSendVal('f-emailSend'),
       smsSend: getSendVal('f-smsSend'),
       memo: document.getElementById('f-memo').value.trim(),
-      date, history: date ? [{type:'join', date, note:'최초 등록'}] : []
+      date,
+      history: date ? [{type:'join', date, note:'최초 등록'}] : []
     };
     data.push(targetData);
   }
+
   await saveToGoogleSheet(actionStr, targetData);
   closeEditModal();
   render();
